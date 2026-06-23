@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐾 Private Animals - Jogo de Reprodução Animal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .age-verification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .age-verification.hidden {
+            display: none;
+        }
+
+        .age-modal {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .age-modal h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .age-modal p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .age-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .age-btn {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .age-btn.yes {
+            background: #667eea;
+            color: white;
+        }
+
+        .age-btn.yes:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .age-btn.no {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .age-btn.no:hover {
+            background: #e0e0e0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .coins {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .audio-toggle {
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .audio-toggle:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .content {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .sidebar h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .animal-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .animal-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid #ddd;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .animal-item:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .animal-item.active {
+            border-color: #667eea;
+            background: #e8ecff;
+            font-weight: bold;
+        }
+
+        .animal-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .habitat {
+            background: linear-gradient(135deg, #90ee90 0%, #87ceeb 100%);
+            border-radius: 15px;
+            padding: 30px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .habitat.forest {
+            background: linear-gradient(135deg, #228B22 0%, #32CD32 100%);
+        }
+
+        .habitat.water {
+            background: linear-gradient(135deg, #1E90FF 0%, #87CEEB 100%);
+        }
+
+        .habitat.desert {
+            background: linear-gradient(135deg, #DAA520 0%, #F4A460 100%);
+        }
+
+        .habitat.snow {
+            background: linear-gradient(135deg, #E0FFFF 0%, #B0E0E6 100%);
+        }
+
+        .habitat-name {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .animal-display {
+            font-size: 120px;
+            margin: 20px 0;
+            animation: bounce 2s infinite;
+            position: relative;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .couple-info {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .breed-button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            margin: 10px;
+        }
+
+        .breed-button:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        .breed-button.active {
+            background: #28a745;
+            animation: pulse 0.6s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .coins-gained {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffc107;
+            margin-top: 20px;
+        }
+
+        .rename-input {
+            background: white;
+            border: 2px solid #667eea;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+
+        .rename-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+
+        .rename-btn:hover {
+            background: #5568d3;
+        }
+
+        .stats {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .info-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .info-modal.hidden {
+            display: none;
+        }
+
+        .info-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .info-content h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .info-content p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .close-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .close-btn:hover {
+            background: #c82333;
+        }
+
+        .shop {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .shop h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .shop-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .shop-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #ffc107;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .shop-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .shop-item.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .shop-price {
+            color: #ffc107;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .kid-mode-notice {
+            background: #d1ecf1;
+            border: 2px solid #0c5460;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .breeding-animation {
+            position: relative;
+            height: 200px;
+            width: 200px;
+        }
+
+        .male-animal {
+            position: absolute;
+            font-size: 80px;
+            top: 0;
+            left: 0;
+        }
+
+        .female-animal {
+            position: absolute;
+            font-size: 80px;
+            bottom: 0;
+            right: 0;
+        }
+
+        .mating {
+            animation: mating-animation 1s infinite;
+        }
+
+        @keyframes mating-animation {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-20px) translateX(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Verificação de Idade -->
+    <div class="age-verification" id="ageVerification">
+        <div class="age-modal">
+            <h1>🔞 Verificação de Idade</h1>
+            <p>Este jogo contém conteúdo adulto com simulação de reprodução animal realista.</p>
+            <p>Você tem 20 anos ou mais?</p>
+            <div class="age-buttons">
+                <button class="age-btn yes" onclick="allowAdult()">SIM, tenho 20+</button>
+                <button class="age-btn no" onclick="allowKid()">NÃO, sou menor</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Informações -->
+    <div class="info-modal hidden" id="infoModal">
+        <div class="info-content">
+            <h2 id="infoTitle">Informações</h2>
+            <p id="infoText"></p>
+            <button class="close-btn" onclick="closeInfo()">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Container Principal -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🐾 Private Animals</h1>
+            <div class="header-right">
+                <div class="coins">
+                    💰 <span id="coinsDisplay">0</span>
+                </div>
+                <button class="audio-toggle" id="audioToggle" onclick="toggleAudio()">🔊 Som: ON</button>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h2>Meus Animais</h2>
+                <div class="animal-list" id="animalList"></div>
+            </div>
+
+            <!-- Área Principal -->
+            <div class="main-area">
+                <div class="kid-mode-notice" id="kidNotice" style="display: none;">
+                    👶 Modo Criança: Aprenda sobre animais e suas características!
+                </div>
+
+                <div class="habitat" id="habitat">
+                    <div class="habitat-name" id="habitatName">Selecione um animal</div>
+                    <div class="breeding-animation" id="breedingAnimation">
+                        <div class="animal-display" id="animalEmoji">🐾</div>
+                    </div>
+                    <div class="couple-info" id="coupleInfo"></div>
+                    <div id="breedControls"></div>
+                    <div class="coins-gained" id="coinsGained"></div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalCouples">0</div>
+                        <div class="stat-label">Casais Totais</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="coinsPerSecond">0</div>
+                        <div class="stat-label">Moedas/s</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalCoins">0</div>
+                        <div class="stat-label">Moedas Ganhas</div>
+                    </div>
+                </div>
+
+                <div class="shop" id="shop"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== DADOS DO JOGO ====================
+        const ANIMALS = {
+            dog: {
+                name: 'Cachorro',
+                emoji: '🐕',
+                cost: 100,
+                habitat: 'forest',
+                habitatName: 'Casa do Cachorro',
+                description: 'O cachorro é o melhor amigo do homem. Leal e brincalhão.',
+                info: 'Cães domésticos têm ciclos reprodutivos específicos e formam laços fortes com seus parceiros.'
+            },
+            cat: {
+                name: 'Gato',
+                emoji: '🐱',
+                cost: 150,
+                habitat: 'forest',
+                habitatName: 'Toca do Gato',
+                description: 'Gatos são independentes e curiosos.',
+                info: 'Gatos têm comportamentos de reprodução únicos e são excelentes caçadores.'
+            },
+            horse: {
+                name: 'Cavalo',
+                emoji: '🐴',
+                cost: 200,
+                habitat: 'desert',
+                habitatName: 'Pasto do Cavalo',
+                description: 'Cavalos são nobres e rápidos.',
+                info: 'Cavalos são animais sociais e formam manadas estruturadas.'
+            },
+            lion: {
+                name: 'Leão',
+                emoji: '🦁',
+                cost: 300,
+                habitat: 'desert',
+                habitatName: 'Savana do Leão',
+                description: 'O rei da selva, forte e majestoso.',
+                info: 'Leões vivem em grupos sociais e têm rituais de reprodução complexos.'
+            },
+            elephant: {
+                name: 'Elefante',
+                emoji: '🐘',
+                cost: 400,
+                habitat: 'desert',
+                habitatName: 'Savana do Elefante',
+                description: 'Elefantes são os maiores mamíferos terrestres.',
+                info: 'Elefantes têm uma das maiores inteligências do reino animal.'
+            },
+            monkey: {
+                name: 'Macaco',
+                emoji: '🐵',
+                cost: 180,
+                habitat: 'forest',
+                habitatName: 'Floresta do Macaco',
+                description: 'Macacos são inteligentes e sociais.',
+                info: 'Primatas têm comportamentos sociais complexos e hierarquias de grupo.'
+            },
+            bird: {
+                name: 'Pássaro',
+                emoji: '🦅',
+                cost: 120,
+                habitat: 'forest',
+                habitatName: 'Ninho do Pássaro',
+                description: 'Pássaros dominam o céu com elegância.',
+                info: 'Aves têm ritmos reprodutivos sazonais e geralmente formam pares monogâmicos.'
+            },
+            fish: {
+                name: 'Peixe',
+                emoji: '🐠',
+                cost: 80,
+                habitat: 'water',
+                habitatName: 'Aquário do Peixe',
+                description: 'Peixes nadam graciosamente nas águas.',
+                info: 'Peixes têm estratégias reprodutivas diversas.'
+            },
+            rabbit: {
+                name: 'Coelho',
+                emoji: '🐰',
+                cost: 90,
+                habitat: 'forest',
+                habitatName: 'Toca do Coelho',
+                description: 'Coelhos são rápidos e fofos.',
+                info: 'Coelhos são conhecidos por sua alta taxa reprodutiva.'
+            },
+            penguin: {
+                name: 'Pinguim',
+                emoji: '🐧',
+                cost: 250,
+                habitat: 'snow',
+                habitatName: 'Gelo do Pinguim',
+                description: 'Pinguins vivem em ambientes gelados.',
+                info: 'Pinguins vivem em colônias e formam pares monogâmicos.'
+            }
+        };
+
+        // ==================== VARIÁVEIS GLOBAIS ====================
+        let gameState = {
+            coins: 0,
+            audioEnabled: true,
+            isAdultMode: false,
+            couples: {},
+            totalCoinsEarned: 0,
+            selectedAnimal: null
+        };
+
+        let breedingStatus = {};
+
+        // ==================== FUNÇÕES DE VERIFICAÇÃO DE IDADE ====================
+        function allowAdult() {
+            gameState.isAdultMode = true;
+            document.getElementById('ageVerification').classList.add('hidden');
+            initializeGame();
+        }
+
+        function allowKid() {
+            gameState.isAdultMode = false;
+            document.getElementById('ageVerification').classList.add('hidden');
+            document.getElementById('kidNotice').style.display = 'block';
+            initializeGame();
+        }
+
+        // ==================== INICIALIZAÇÃO DO JOGO ====================
+        function initializeGame() {
+            createCouple('dog');
+            updateAnimalList();
+            renderHabitat('dog');
+            gameLoop();
+        }
+
+        function createCouple(animalType) {
+            if (!gameState.couples[animalType]) {
+                gameState.couples[animalType] = [];
+            }
+
+            const coupleId = gameState.couples[animalType].length + 1;
+            const animal = ANIMALS[animalType];
+            
+            gameState.couples[animalType].push({
+                id: coupleId,
+                name: `${animal.name} ${coupleId}`,
+                isBreeding: false,
+                coinsThisRound: 0
+            });
+
+            breedingStatus[`${animalType}-${coupleId}`] = false;
+        }
+
+        // ==================== RENDERIZAÇÃO DA LISTA DE ANIMAIS ====================
+        function updateAnimalList() {
+            const list = document.getElementById('animalList');
+            list.innerHTML = '';
+
+            Object.keys(ANIMALS).forEach(type => {
+                const animal = ANIMALS[type];
+                const isUnlocked = gameState.couples[type] && gameState.couples[type].length > 0;
+                const count = isUnlocked ? gameState.couples[type].length : 0;
+
+                const item = document.createElement('div');
+                item.className = `animal-item ${isUnlocked ? 'active' : 'locked'}`;
+                item.textContent = `${animal.emoji} ${animal.name}${isUnlocked ? ` (${count})` : ' [BLOQUEADO]'}`;
+                item.onclick = () => isUnlocked && renderHabitat(type);
+                list.appendChild(item);
+            });
+        }
+
+        // ==================== RENDERIZAÇÃO DO HABITAT ====================
+        function renderHabitat(animalType) {
+            gameState.selectedAnimal = animalType;
+            const animal = ANIMALS[animalType];
+            const habitat = document.getElementById('habitat');
+            const couple = gameState.couples[animalType][0];
+
+            habitat.className = `habitat ${animal.habitat}`;
+            document.getElementById('habitatName').textContent = animal.habitatName;
+            document.getElementById('animalEmoji').textContent = animal.emoji;
+            document.getElementById('coupleInfo').textContent = `Casal: ${couple.name}`;
+
+            // Renderizar controles
+            const controls = document.getElementById('breedControls');
+            controls.innerHTML = '';
+
+            if (gameState.isAdultMode) {
+                const breedBtn = document.createElement('button');
+                breedBtn.className = 'breed-button';
+                breedBtn.textContent = breedingStatus[`${animalType}-1`] ? '⏹️ PARAR' : '🔴 COMEÇAR';
+                breedBtn.onclick = () => toggleBreeding(animalType, 1, breedBtn);
+                controls.appendChild(breedBtn);
+
+                // Inputs para renomear
+                const renameDiv = document.createElement('div');
+                renameDiv.style.marginTop = '15px';
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'rename-input';
+                input.placeholder = 'Novo nome do casal...';
+                input.value = couple.name;
+                
+                const renameBtn = document.createElement('button');
+                renameBtn.className = 'rename-btn';
+                renameBtn.textContent = 'Renomear';
+                renameBtn.onclick = () => {
+                    if (input.value.trim()) {
+                        couple.name = input.value.trim();
+                        document.getElementById('coupleInfo').textContent = `Casal: ${couple.name}`;
+                    }
+                };
+                
+                renameDiv.appendChild(input);
+                renameDiv.appendChild(renameBtn);
+                controls.appendChild(renameDiv);
+            } else {
+                // Modo criança - apenas informações
+                const info = document.createElement('p');
+                info.style.color = 'white';
+                info.style.marginTop = '20px';
+                info.textContent = animal.info;
+                controls.appendChild(info);
+
+                const btn = document.createElement('button');
+                btn.className = 'breed-button';
+                btn.textContent = '📚 Mais Informações';
+                btn.onclick = () => showInfo(animal.name, animal.info);
+                controls.appendChild(btn);
+            }
+        }
+
+        // ==================== CONTROLE DE ACASALAMENTO ====================
+        function toggleBreeding(animalType, coupleId, button) {
+            const key = `${animalType}-${coupleId}`;
+            breedingStatus[key] = !breedingStatus[key];
+
+            if (button) {
+                if (breedingStatus[key]) {
+                    button.textContent = '⏹️ PARAR';
+                    button.classList.add('active');
+                    document.getElementById('breedingAnimation').classList.add('mating');
+                    playSound('breed');
+                } else {
+                    button.textContent = '🔴 COMEÇAR';
+                    button.classList.remove('active');
+                    document.getElementById('breedingAnimation').classList.remove('mating');
+                }
+            }
+        }
+
+        // ==================== GAME LOOP ====================
+        function gameLoop() {
+            let totalCoinsPerSecond = 0;
+
+            Object.keys(gameState.couples).forEach(animalType => {
+                gameState.couples[animalType].forEach((couple, index) => {
+                    const key = `${animalType}-${couple.id}`;
+                    
+                    if (breedingStatus[key]) {
+                        const coinsGained = 30;
+                        gameState.coins += coinsGained / 10;
+                        gameState.totalCoinsEarned += coinsGained / 10;
+                        totalCoinsPerSecond += coinsGained;
+                        couple.coinsThisRound += coinsGained / 10;
+                    }
+                });
+            });
+
+            updateDisplay();
+            checkShop();
+
+            document.getElementById('coinsDisplay').textContent = Math.floor(gameState.coins);
+            document.getElementById('coinsPerSecond').textContent = totalCoinsPerSecond;
+            document.getElementById('totalCoins').textContent = Math.floor(gameState.totalCoinsEarned);
+
+            setTimeout(gameLoop, 100);
+        }
+
+        function updateDisplay() {
+            let totalCouples = 0;
+            Object.keys(gameState.couples).forEach(type => {
+                totalCouples += gameState.couples[type].length;
+            });
+            document.getElementById('totalCouples').textContent = totalCouples;
+        }
+
+        // ==================== LOJA ====================
+        function checkShop() {
+            const shop = document.getElementById('shop');
+            shop.innerHTML = '<h3>🛒 Loja - Compre Novos Animais</h3><div class="shop-items" id="shopItems"></div>';
+            const shopItems = document.getElementById('shopItems');
+
+            Object.keys(ANIMALS).forEach(type => {
+                const animal = ANIMALS[type];
+                const isUnlocked = gameState.couples[type] && gameState.couples[type].length > 0;
+                const canAfford = gameState.coins >= animal.cost;
+
+                const item = document.createElement('div');
+                item.className = `shop-item ${!canAfford && !isUnlocked ? 'locked' : ''}`;
+                item.innerHTML = `
+                    <div style="font-size: 40px;">${animal.emoji}</div>
+                    <div>${animal.name}</div>
+                    <div class="shop-price">💰 ${animal.cost}</div>
+                    ${isUnlocked ? '<div style="color: green; font-weight: bold;">✓ Desbloqueado</div>' : ''}
+                `;
+
+                item.onclick = () => {
+                    if (canAfford && !isUnlocked) {
+                        gameState.coins -= animal.cost;
+                        createCouple(type);
+                        updateAnimalList();
+                        checkShop();
+                        playSound('unlock');
+                        
+                        // Criar novo casal para todos os anteriores
+                        Object.keys(gameState.couples).forEach(prevType => {
+                            if (prevType !== type && gameState.couples[prevType].length > 0) {
+                                createCouple(prevType);
+                            }
+                        });
+                        updateAnimalList();
+                    } else if (isUnlocked && canAfford) {
+                        gameState.coins -= animal.cost;
+                        createCouple(type);
+                        updateAnimalList();
+                        checkShop();
+                        playSound('newCouple');
+                    }
+                };
+
+                shopItems.appendChild(item);
+            });
+        }
+
+        // ==================== ÁUDIO ====================
+        function toggleAudio() {
+            gameState.audioEnabled = !gameState.audioEnabled;
+            const toggle = document.getElementById('audioToggle');
+            toggle.textContent = gameState.audioEnabled ? '🔊 Som: ON' : '🔇 Som: OFF';
+        }
+
+        function playSound(type) {
+            if (!gameState.audioEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+
+                switch(type) {
+                    case 'breed':
+                        oscillator.frequency.value = 440;
+                        gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.1);
+                        break;
+                    case 'unlock':
+                        oscillator.frequency.value = 800;
+                        gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        oscillator.start(audioContext.currentTime);
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                        break;
+                }
+            } catch(e) {
+                console.log('Audio não suportado');
+            }
+        }
+
+        // ==================== INFORMAÇÕES ====================
+        function showInfo(title, text) {
+            document.getElementById('infoTitle').textContent = title;
+            document.getElementById('infoText').textContent = text;
+            document.getElementById('infoModal').classList.remove('hidden');
+        }
+
+        function closeInfo() {
+            document.getElementById('infoModal').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
