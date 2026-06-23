@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐾 Private Animals - Jogo de Reprodução Animal</title>
+    <title>🐾 Private Animals - Jogo Realista de Reprodução</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1a1a1a;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -27,7 +27,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -210,10 +210,11 @@
         }
 
         .habitat {
-            background: linear-gradient(135deg, #90ee90 0%, #87ceeb 100%);
+            background-size: cover;
+            background-position: center;
             border-radius: 15px;
             padding: 30px;
-            min-height: 400px;
+            min-height: 500px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -221,56 +222,84 @@
             text-align: center;
             position: relative;
             overflow: hidden;
-            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.1);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.2);
         }
 
-        .habitat.forest {
-            background: linear-gradient(135deg, #228B22 0%, #32CD32 100%);
-        }
-
-        .habitat.water {
-            background: linear-gradient(135deg, #1E90FF 0%, #87CEEB 100%);
-        }
-
-        .habitat.desert {
-            background: linear-gradient(135deg, #DAA520 0%, #F4A460 100%);
-        }
-
-        .habitat.snow {
-            background: linear-gradient(135deg, #E0FFFF 0%, #B0E0E6 100%);
-        }
-
-        .habitat-name {
+        .habitat::before {
+            content: '';
             position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-
-        .animal-display {
-            font-size: 120px;
-            margin: 20px 0;
-            animation: bounce 2s infinite;
-            position: relative;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .couple-info {
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+        }
+
+        .habitat-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .couple-name {
+            background: rgba(0, 0, 0, 0.5);
             color: white;
             padding: 15px 30px;
             border-radius: 10px;
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
-            margin: 15px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .animals-display {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .animal-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .animal-svg {
+            width: 200px;
+            height: 200px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .animal-label {
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .mating-animation {
+            animation: mating-motion 1s infinite;
+        }
+
+        @keyframes mating-motion {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            50% { transform: translateY(-15px) translateX(-10px); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
         .breed-button {
@@ -283,7 +312,6 @@
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s;
-            margin: 10px;
         }
 
         .breed-button:hover {
@@ -301,20 +329,33 @@
             50% { transform: scale(1.05); }
         }
 
+        .breed-button.stop {
+            background: #dc3545;
+        }
+
         .coins-gained {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             color: #ffc107;
-            margin-top: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            min-height: 40px;
+        }
+
+        .rename-section {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
         }
 
         .rename-input {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             border: 2px solid #667eea;
             padding: 10px;
             border-radius: 8px;
             font-size: 14px;
             margin: 10px 0;
+            width: 200px;
         }
 
         .rename-btn {
@@ -359,57 +400,6 @@
             color: #666;
             font-size: 12px;
             margin-top: 5px;
-        }
-
-        .info-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 999;
-        }
-
-        .info-modal.hidden {
-            display: none;
-        }
-
-        .info-content {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .info-content h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .info-content p {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-
-        .close-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        .close-btn:hover {
-            background: #c82333;
         }
 
         .shop {
@@ -467,33 +457,20 @@
             font-weight: bold;
         }
 
-        .breeding-animation {
-            position: relative;
-            height: 200px;
-            width: 200px;
-        }
+        @media (max-width: 768px) {
+            .animals-display {
+                flex-direction: column;
+                gap: 20px;
+            }
 
-        .male-animal {
-            position: absolute;
-            font-size: 80px;
-            top: 0;
-            left: 0;
-        }
+            .animal-svg {
+                width: 150px;
+                height: 150px;
+            }
 
-        .female-animal {
-            position: absolute;
-            font-size: 80px;
-            bottom: 0;
-            right: 0;
-        }
-
-        .mating {
-            animation: mating-animation 1s infinite;
-        }
-
-        @keyframes mating-animation {
-            0%, 100% { transform: translateY(0) translateX(0); }
-            50% { transform: translateY(-20px) translateX(-10px); }
+            .stats {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -511,20 +488,11 @@
         </div>
     </div>
 
-    <!-- Modal de Informações -->
-    <div class="info-modal hidden" id="infoModal">
-        <div class="info-content">
-            <h2 id="infoTitle">Informações</h2>
-            <p id="infoText"></p>
-            <button class="close-btn" onclick="closeInfo()">Fechar</button>
-        </div>
-    </div>
-
     <!-- Container Principal -->
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🐾 Private Animals</h1>
+            <h1>🐾 Private Animals - Reprodução Realista</h1>
             <div class="header-right">
                 <div class="coins">
                     💰 <span id="coinsDisplay">0</span>
@@ -548,13 +516,21 @@
                 </div>
 
                 <div class="habitat" id="habitat">
-                    <div class="habitat-name" id="habitatName">Selecione um animal</div>
-                    <div class="breeding-animation" id="breedingAnimation">
-                        <div class="animal-display" id="animalEmoji">🐾</div>
+                    <div class="habitat-content">
+                        <div class="couple-name" id="coupleName">Selecione um animal</div>
+                        
+                        <div class="animals-display" id="animalsDisplay">
+                            <div style="color: white; font-size: 20px;">Selecione um animal para começar</div>
+                        </div>
+
+                        <div class="controls" id="controls"></div>
+                        <div class="coins-gained" id="coinsGained"></div>
+
+                        <div class="rename-section" id="renameSection" style="display: none;">
+                            <input type="text" class="rename-input" id="renameInput" placeholder="Novo nome do casal...">
+                            <button class="rename-btn" onclick="renameCouple()">Renomear</button>
+                        </div>
                     </div>
-                    <div class="couple-info" id="coupleInfo"></div>
-                    <div id="breedControls"></div>
-                    <div class="coins-gained" id="coinsGained"></div>
                 </div>
 
                 <div class="stats">
@@ -582,93 +558,38 @@
         const ANIMALS = {
             dog: {
                 name: 'Cachorro',
-                emoji: '🐕',
                 cost: 100,
-                habitat: 'forest',
-                habitatName: 'Casa do Cachorro',
-                description: 'O cachorro é o melhor amigo do homem. Leal e brincalhão.',
-                info: 'Cães domésticos têm ciclos reprodutivos específicos e formam laços fortes com seus parceiros.'
+                habitat: "linear-gradient(135deg, #90EE90 0%, #228B22 100%)",
+                description: 'O cachorro é leal e afetuoso.',
+                info: 'Cães têm ciclos reprodutivos e formam laços fortes.'
             },
             cat: {
                 name: 'Gato',
-                emoji: '🐱',
                 cost: 150,
-                habitat: 'forest',
-                habitatName: 'Toca do Gato',
-                description: 'Gatos são independentes e curiosos.',
-                info: 'Gatos têm comportamentos de reprodução únicos e são excelentes caçadores.'
+                habitat: "linear-gradient(135deg, #8B7355 0%, #A0826D 100%)",
+                description: 'Gatos são independentes e graciosos.',
+                info: 'Gatos têm comportamentos únicos de reprodução.'
             },
             horse: {
                 name: 'Cavalo',
-                emoji: '🐴',
                 cost: 200,
-                habitat: 'desert',
-                habitatName: 'Pasto do Cavalo',
-                description: 'Cavalos são nobres e rápidos.',
-                info: 'Cavalos são animais sociais e formam manadas estruturadas.'
+                habitat: "linear-gradient(135deg, #DAA520 0%, #CD853F 100%)",
+                description: 'Cavalos são nobres e poderosos.',
+                info: 'Cavalos formam manadas estruturadas.'
             },
             lion: {
                 name: 'Leão',
-                emoji: '🦁',
                 cost: 300,
-                habitat: 'desert',
-                habitatName: 'Savana do Leão',
-                description: 'O rei da selva, forte e majestoso.',
-                info: 'Leões vivem em grupos sociais e têm rituais de reprodução complexos.'
-            },
-            elephant: {
-                name: 'Elefante',
-                emoji: '🐘',
-                cost: 400,
-                habitat: 'desert',
-                habitatName: 'Savana do Elefante',
-                description: 'Elefantes são os maiores mamíferos terrestres.',
-                info: 'Elefantes têm uma das maiores inteligências do reino animal.'
+                habitat: "linear-gradient(135deg, #F4A460 0%, #8B4513 100%)",
+                description: 'O rei da savana, majestoso.',
+                info: 'Leões vivem em grupos e têm rituais complexos.'
             },
             monkey: {
                 name: 'Macaco',
-                emoji: '🐵',
                 cost: 180,
-                habitat: 'forest',
-                habitatName: 'Floresta do Macaco',
+                habitat: "linear-gradient(135deg, #228B22 0%, #32CD32 100%)",
                 description: 'Macacos são inteligentes e sociais.',
-                info: 'Primatas têm comportamentos sociais complexos e hierarquias de grupo.'
-            },
-            bird: {
-                name: 'Pássaro',
-                emoji: '🦅',
-                cost: 120,
-                habitat: 'forest',
-                habitatName: 'Ninho do Pássaro',
-                description: 'Pássaros dominam o céu com elegância.',
-                info: 'Aves têm ritmos reprodutivos sazonais e geralmente formam pares monogâmicos.'
-            },
-            fish: {
-                name: 'Peixe',
-                emoji: '🐠',
-                cost: 80,
-                habitat: 'water',
-                habitatName: 'Aquário do Peixe',
-                description: 'Peixes nadam graciosamente nas águas.',
-                info: 'Peixes têm estratégias reprodutivas diversas.'
-            },
-            rabbit: {
-                name: 'Coelho',
-                emoji: '🐰',
-                cost: 90,
-                habitat: 'forest',
-                habitatName: 'Toca do Coelho',
-                description: 'Coelhos são rápidos e fofos.',
-                info: 'Coelhos são conhecidos por sua alta taxa reprodutiva.'
-            },
-            penguin: {
-                name: 'Pinguim',
-                emoji: '🐧',
-                cost: 250,
-                habitat: 'snow',
-                habitatName: 'Gelo do Pinguim',
-                description: 'Pinguins vivem em ambientes gelados.',
-                info: 'Pinguins vivem em colônias e formam pares monogâmicos.'
+                info: 'Primatas têm comportamentos sociais complexos.'
             }
         };
 
@@ -684,6 +605,86 @@
 
         let breedingStatus = {};
 
+        // ==================== SVG DOS ANIMAIS ====================
+        function createAnimalSVG(animalType, isMale = true) {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 200 200');
+            svg.setAttribute('class', 'animal-svg');
+
+            let shape = '';
+
+            switch(animalType) {
+                case 'dog':
+                    shape = `
+                        <ellipse cx="100" cy="120" rx="50" ry="45" fill="#8B4513"/>
+                        <circle cx="100" cy="70" r="35" fill="#8B4513"/>
+                        <circle cx="85" cy="50" r="8" fill="black"/>
+                        <circle cx="115" cy="50" r="8" fill="black"/>
+                        <ellipse cx="100" cy="75" rx="5" ry="8" fill="pink"/>
+                        <path d="M 70 100 Q 60 110 65 125" stroke="#8B4513" stroke-width="4" fill="none"/>
+                        <path d="M 130 100 Q 140 110 135 125" stroke="#8B4513" stroke-width="4" fill="none"/>
+                        <path d="M 100 160 Q 110 180 100 190" stroke="#8B4513" stroke-width="4" fill="none"/>
+                    `;
+                    break;
+                case 'cat':
+                    shape = `
+                        <ellipse cx="100" cy="120" rx="40" ry="40" fill="#FFA500"/>
+                        <circle cx="100" cy="60" r="30" fill="#FFA500"/>
+                        <polygon points="85,35 75,15 80,40" fill="#FFA500"/>
+                        <polygon points="115,35 125,15 120,40" fill="#FFA500"/>
+                        <circle cx="90" cy="55" r="4" fill="green"/>
+                        <circle cx="110" cy="55" r="4" fill="green"/>
+                        <ellipse cx="100" cy="70" rx="4" ry="6" fill="pink"/>
+                        <path d="M 75 55 L 50 50" stroke="black" stroke-width="2"/>
+                        <path d="M 125 55 L 150 50" stroke="black" stroke-width="2"/>
+                        <path d="M 100 160 Q 105 180 95 190" stroke="#FFA500" stroke-width="3" fill="none"/>
+                    `;
+                    break;
+                case 'horse':
+                    shape = `
+                        <ellipse cx="100" cy="130" rx="60" ry="40" fill="#8B4513"/>
+                        <ellipse cx="70" cy="80" r="25" fill="#8B4513"/>
+                        <rect x="60" y="165" width="8" height="35" fill="#8B4513"/>
+                        <rect x="90" y="165" width="8" height="35" fill="#8B4513"/>
+                        <rect x="120" y="165" width="8" height="35" fill="#8B4513"/>
+                        <rect x="140" y="165" width="8" height="35" fill="#8B4513"/>
+                        <circle cx="55" cy="70" r="6" fill="black"/>
+                        <polygon points="70,50 60,30 65,50" fill="#8B4513"/>
+                        <path d="M 70 60 L 70 30" stroke="#8B4513" stroke-width="3"/>
+                    `;
+                    break;
+                case 'lion':
+                    shape = `
+                        <circle cx="100" cy="100" r="45" fill="#DAA520"/>
+                        <circle cx="100" cy="100" r="50" fill="none" stroke="#CD853F" stroke-width="8" opacity="0.7"/>
+                        <circle cx="85" cy="85" r="8" fill="black"/>
+                        <circle cx="115" cy="85" r="8" fill="black"/>
+                        <ellipse cx="100" cy="105" rx="6" ry="8" fill="black"/>
+                        <ellipse cx="100" cy="140" rx="35" ry="30" fill="#DAA520"/>
+                        <ellipse cx="70" cy="160" rx="12" ry="30" fill="#DAA520"/>
+                        <ellipse cx="130" cy="160" rx="12" ry="30" fill="#DAA520"/>
+                    `;
+                    break;
+                case 'monkey':
+                    shape = `
+                        <circle cx="100" cy="100" r="35" fill="#8B4513"/>
+                        <circle cx="100" cy="65" r="25" fill="#8B4513"/>
+                        <circle cx="85" cy="85" r="8" fill="#FFD700"/>
+                        <circle cx="115" cy="85" r="8" fill="#FFD700"/>
+                        <circle cx="90" cy="60" r="5" fill="black"/>
+                        <circle cx="110" cy="60" r="5" fill="black"/>
+                        <ellipse cx="100" cy="75" rx="4" ry="6" fill="pink"/>
+                        <path d="M 60 100 Q 40 90 35 110" stroke="#8B4513" stroke-width="6" fill="none"/>
+                        <path d="M 140 100 Q 160 90 165 110" stroke="#8B4513" stroke-width="6" fill="none"/>
+                        <path d="M 100 130 Q 100 160 95 180" stroke="#8B4513" stroke-width="4" fill="none"/>
+                    `;
+                    break;
+            }
+
+            svg.innerHTML = shape;
+            return svg;
+        }
+
         // ==================== FUNÇÕES DE VERIFICAÇÃO DE IDADE ====================
         function allowAdult() {
             gameState.isAdultMode = true;
@@ -698,7 +699,7 @@
             initializeGame();
         }
 
-        // ==================== INICIALIZAÇÃO DO JOGO ====================
+        // ==================== INICIALIZAÇÃO ====================
         function initializeGame() {
             createCouple('dog');
             updateAnimalList();
@@ -724,7 +725,7 @@
             breedingStatus[`${animalType}-${coupleId}`] = false;
         }
 
-        // ==================== RENDERIZAÇÃO DA LISTA DE ANIMAIS ====================
+        // ==================== RENDERIZAÇÃO DA LISTA ====================
         function updateAnimalList() {
             const list = document.getElementById('animalList');
             list.innerHTML = '';
@@ -736,7 +737,7 @@
 
                 const item = document.createElement('div');
                 item.className = `animal-item ${isUnlocked ? 'active' : 'locked'}`;
-                item.textContent = `${animal.emoji} ${animal.name}${isUnlocked ? ` (${count})` : ' [BLOQUEADO]'}`;
+                item.textContent = `${animal.name}${isUnlocked ? ` (${count})` : ' [BLOQUEADO]'}`;
                 item.onclick = () => isUnlocked && renderHabitat(type);
                 list.appendChild(item);
             });
@@ -746,60 +747,61 @@
         function renderHabitat(animalType) {
             gameState.selectedAnimal = animalType;
             const animal = ANIMALS[animalType];
-            const habitat = document.getElementById('habitat');
             const couple = gameState.couples[animalType][0];
 
-            habitat.className = `habitat ${animal.habitat}`;
-            document.getElementById('habitatName').textContent = animal.habitatName;
-            document.getElementById('animalEmoji').textContent = animal.emoji;
-            document.getElementById('coupleInfo').textContent = `Casal: ${couple.name}`;
+            const habitat = document.getElementById('habitat');
+            habitat.style.background = animal.habitat;
+
+            document.getElementById('coupleName').textContent = couple.name;
+
+            // Renderizar animais
+            const display = document.getElementById('animalsDisplay');
+            display.innerHTML = '';
+
+            const maleContainer = document.createElement('div');
+            maleContainer.className = 'animal-container';
+            maleContainer.innerHTML = `
+                <div id="maleAnimal"></div>
+                <div class="animal-label">Macho ♂️</div>
+            `;
+
+            const femaleContainer = document.createElement('div');
+            femaleContainer.className = 'animal-container';
+            femaleContainer.innerHTML = `
+                <div id="femaleAnimal"></div>
+                <div class="animal-label">Fêmea ♀️</div>
+            `;
+
+            display.appendChild(maleContainer);
+            display.appendChild(femaleContainer);
+
+            maleContainer.querySelector('#maleAnimal').appendChild(createAnimalSVG(animalType, true));
+            femaleContainer.querySelector('#femaleAnimal').appendChild(createAnimalSVG(animalType, false));
 
             // Renderizar controles
-            const controls = document.getElementById('breedControls');
+            const controls = document.getElementById('controls');
             controls.innerHTML = '';
 
             if (gameState.isAdultMode) {
                 const breedBtn = document.createElement('button');
                 breedBtn.className = 'breed-button';
+                breedBtn.id = 'breedBtn';
                 breedBtn.textContent = breedingStatus[`${animalType}-1`] ? '⏹️ PARAR' : '🔴 COMEÇAR';
                 breedBtn.onclick = () => toggleBreeding(animalType, 1, breedBtn);
                 controls.appendChild(breedBtn);
+            }
 
-                // Inputs para renomear
-                const renameDiv = document.createElement('div');
-                renameDiv.style.marginTop = '15px';
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.className = 'rename-input';
-                input.placeholder = 'Novo nome do casal...';
-                input.value = couple.name;
-                
-                const renameBtn = document.createElement('button');
-                renameBtn.className = 'rename-btn';
-                renameBtn.textContent = 'Renomear';
-                renameBtn.onclick = () => {
-                    if (input.value.trim()) {
-                        couple.name = input.value.trim();
-                        document.getElementById('coupleInfo').textContent = `Casal: ${couple.name}`;
-                    }
-                };
-                
-                renameDiv.appendChild(input);
-                renameDiv.appendChild(renameBtn);
-                controls.appendChild(renameDiv);
-            } else {
-                // Modo criança - apenas informações
-                const info = document.createElement('p');
-                info.style.color = 'white';
-                info.style.marginTop = '20px';
-                info.textContent = animal.info;
-                controls.appendChild(info);
+            document.getElementById('renameSection').style.display = gameState.isAdultMode ? 'block' : 'none';
+            document.getElementById('renameInput').value = couple.name;
+        }
 
-                const btn = document.createElement('button');
-                btn.className = 'breed-button';
-                btn.textContent = '📚 Mais Informações';
-                btn.onclick = () => showInfo(animal.name, animal.info);
-                controls.appendChild(btn);
+        function renameCouple() {
+            const newName = document.getElementById('renameInput').value.trim();
+            if (newName && gameState.selectedAnimal) {
+                const couple = gameState.couples[gameState.selectedAnimal][0];
+                couple.name = newName;
+                document.getElementById('coupleName').textContent = newName;
+                playSound('rename');
             }
         }
 
@@ -808,17 +810,20 @@
             const key = `${animalType}-${coupleId}`;
             breedingStatus[key] = !breedingStatus[key];
 
-            if (button) {
-                if (breedingStatus[key]) {
-                    button.textContent = '⏹️ PARAR';
-                    button.classList.add('active');
-                    document.getElementById('breedingAnimation').classList.add('mating');
-                    playSound('breed');
-                } else {
-                    button.textContent = '🔴 COMEÇAR';
-                    button.classList.remove('active');
-                    document.getElementById('breedingAnimation').classList.remove('mating');
-                }
+            const maleAnimal = document.getElementById('maleAnimal');
+            const femaleAnimal = document.getElementById('femaleAnimal');
+
+            if (breedingStatus[key]) {
+                button.textContent = '⏹️ PARAR';
+                button.classList.add('active');
+                if (maleAnimal) maleAnimal.classList.add('mating-animation');
+                if (femaleAnimal) femaleAnimal.classList.add('mating-animation');
+                playSound('breed');
+            } else {
+                button.textContent = '🔴 COMEÇAR';
+                button.classList.remove('active');
+                if (maleAnimal) maleAnimal.classList.remove('mating-animation');
+                if (femaleAnimal) femaleAnimal.classList.remove('mating-animation');
             }
         }
 
@@ -872,8 +877,7 @@
                 const item = document.createElement('div');
                 item.className = `shop-item ${!canAfford && !isUnlocked ? 'locked' : ''}`;
                 item.innerHTML = `
-                    <div style="font-size: 40px;">${animal.emoji}</div>
-                    <div>${animal.name}</div>
+                    <div style="font-size: 32px; margin-bottom: 10px;">${animal.name}</div>
                     <div class="shop-price">💰 ${animal.cost}</div>
                     ${isUnlocked ? '<div style="color: green; font-weight: bold;">✓ Desbloqueado</div>' : ''}
                 `;
@@ -885,8 +889,6 @@
                         updateAnimalList();
                         checkShop();
                         playSound('unlock');
-                        
-                        // Criar novo casal para todos os anteriores
                         Object.keys(gameState.couples).forEach(prevType => {
                             if (prevType !== type && gameState.couples[prevType].length > 0) {
                                 createCouple(prevType);
@@ -945,16 +947,10 @@
             }
         }
 
-        // ==================== INFORMAÇÕES ====================
-        function showInfo(title, text) {
-            document.getElementById('infoTitle').textContent = title;
-            document.getElementById('infoText').textContent = text;
-            document.getElementById('infoModal').classList.remove('hidden');
-        }
-
-        function closeInfo() {
-            document.getElementById('infoModal').classList.add('hidden');
-        }
+        // Iniciar
+        window.onload = () => {
+            // Verificação de idade já inicia
+        };
     </script>
 </body>
 </html>
